@@ -1,5 +1,7 @@
 {
 	"Show score meter": true,
+	"Ignore beatmap hitsounds": true,
+	"Use skin's sound samples": true,
 	"Always show key overlay": true,
 	"Song volume": 100,
 	"Effect volume": 75,
