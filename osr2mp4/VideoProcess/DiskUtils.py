@@ -17,7 +17,6 @@ def rename_video(settings):
 	current_file = os.path.join(settings.temp, "output0" + file_extension)
 	os.rename(current_file, f)
 
-
 def cleanup(settings):
 	if os.path.isdir(settings.temp):
 		shutil.rmtree(settings.temp)
