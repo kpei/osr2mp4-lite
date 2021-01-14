@@ -221,12 +221,5 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 
 def create_audio(my_info, beatmap_info, offset, endtime, settings, mods):
 	beatmap_info = deepcopy(beatmap_info)
-
-	if settings.process >= 1:
-		audio_args = (my_info, beatmap_info, offset, endtime, mods, settings,)
-		audio = Process(target=processaudio, args=audio_args)
-		audio.start()
-		return audio
-	else:
-		processaudio(my_info, beatmap_info, offset, endtime, mods, settings)
-		return None
+	processaudio(my_info, beatmap_info, offset, endtime, mods, settings)
+	return None

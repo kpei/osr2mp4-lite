@@ -41,22 +41,44 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
 
 
 def create_frame_dual(settings, beatmap, replay_info, resultinfo, videotime):
+	shared_pipe = []
+	drawers = []
+	writers = []
 
-	_, file_extension = os.path.splitext(settings.output)
-	f = os.path.join(settings.temp, "outputf" + file_extension)
+	start_index, end_index = videotime
+	osr_interval = int((end_index - start_index) / settings.process)
+	start = start_index
 
-	writer_conn, drawer_conn = Pipe(duplex=False)
-	drawer = Process(target=draw_frame, args=(drawer_conn, beatmap, replay_info, resultinfo, videotime, settings))
-	writer = Process(target=write_frame, args=(writer_conn, f, settings))
+	my_file = open(os.path.join(settings.temp, "listvideo.txt"), "w")
+	for i in range(settings.process):
 
-	drawer.start()
-	writer.start()
-	drawer.join()
-	writer.join()
+		if i == settings.process - 1:
+			end = end_index
+		else:
+			end = start + osr_interval
 
-	writer_conn.close()
-	drawer_conn.close()
-	return None, None, None, None
+		vid = (start, end)
+
+		_, file_extension = os.path.splitext(settings.output)
+		f = os.path.join(settings.temp, f"outputf{i}{file_extension}")
+
+		writer_conn, drawer_conn = Pipe(duplex=False)
+		drawer = Process(target=draw_frame, args=(drawer_conn, beatmap, replay_info, resultinfo, vid, settings))
+		writer = Process(target=write_frame, args=(writer_conn, f, None, settings))
+
+		drawer.start()
+		writer.start()
+
+		shared_pipe.append((writer_conn, drawer_conn))
+		drawers.append(drawer)
+		writers.append(writer)
+
+		my_file.write("file '{}'\n".format(f))
+
+		start += osr_interval
+	my_file.close()
+
+	return drawers, writers, shared_pipe, None
 
 def draw_frame(conn, beatmap, replay_info, resultinfo, videotime, settings):
 	try:
@@ -83,18 +105,18 @@ def draw(conn, beatmap, replay_info, resultinfo, videotime, settings):
 			conn.send(packed_image.tobytes())
 	conn.send(os.EX_OK)
 
-def write_frame(conn, filename, settings):
+def write_frame(conn, filename, videotime, settings):
 	try:
-		write(conn, filename, settings)
+		write(conn, filename, videotime, settings)
 	except Exception as e:
 		tb = traceback.format_exc()
 		logger.error("{} from {}\n{}\n\n\n".format(tb, filename, repr(e)))
 		raise
 
-def write(conn, filename, settings):
+def write(conn, filename, videotime, settings):
 	logger.info("Start writing")
 
-	writer = getwriter(filename, settings)
+	writer = getwriter(filename, videotime, settings)
 
 	frame = -1
 	while frame != os.EX_OK:

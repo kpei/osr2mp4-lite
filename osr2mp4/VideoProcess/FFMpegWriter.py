@@ -19,6 +19,7 @@ class FFMpegWriter:
         threads=None,
         ffmpeg_params=None,
         pixel_format=None,
+        audiotime=None
     ):
         if logfile is None:
             logfile = sp.PIPE
@@ -52,7 +53,10 @@ class FFMpegWriter:
             "-",
         ]
         if audiofile is not None:
-            cmd.extend(["-i", audiofile, "-acodec", audiocodec])
+            if audiotime is not None:
+                cmd.extend(["-ss", str(audiotime[0]), "-i", audiofile, "-t", str(audiotime[1] - audiotime[0]), "-acodec", audiocodec])
+            else:
+                cmd.extend(["-i", audiofile, "-acodec", audiocodec])
         cmd.extend(["-vcodec", codec, "-preset", preset, "-crf", "28"])
         if ffmpeg_params is not None:
             cmd.extend(ffmpeg_params)

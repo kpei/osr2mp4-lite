@@ -23,7 +23,7 @@ from osr2mp4.Utils.HashBeatmap import get_osu
 from osr2mp4.Utils.Setup import setupglobals
 from osr2mp4.Utils.Timing import find_time, get_offset
 from osr2mp4.VideoProcess.CreateFrames import create_frame, create_frame_dual
-from osr2mp4.VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup, rename_video
+from osr2mp4.VideoProcess.DiskUtils import concat_videos_with_audio, setup_dir, cleanup, rename_video
 from osr2mp4.global_var import Settings, defaultsettings, defaultppconfig, defaultstrainconfig
 import uuid
 from autologging import traced, logged, TRACE
@@ -161,8 +161,7 @@ class Osr2mp4:
 			self.replay_event = self.replay_info.play_data
 
 		self.start_index, self.end_index = find_time(starttime, endtime, self.replay_event, self.settings)
-		self.starttimne, self.endtime = starttime, endtime
-
+		self.starttime, self.endtime = starttime, endtime
 		self.resultinfo = None
 
 		self.previousprogress = 0
@@ -239,10 +238,9 @@ class Osr2mp4:
 			self.joinaudio()
 
 		if self.data["Process"] > 1:
-			concat_videos(self.settings)
+			concat_videos_with_audio(self.settings)
 		elif self.data["Process"] == 1:
 			rename_video(self.settings)
-		mix_video_audio(self.settings)
 
 	def cleanup(self):
 		try:

@@ -11,6 +11,6 @@
 	"Start time": 0,
 	"End time": -1,
 	"Video codec": "mp4v",
-	"Process": 0,
+	"Process": 2,
 	"ffmpeg path": "/tmp/ffmpeg"
 }
