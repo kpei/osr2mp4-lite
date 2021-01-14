@@ -57,7 +57,7 @@ class FFMpegWriter:
                 cmd.extend(["-ss", str(audiotime[0]), "-i", audiofile, "-t", str(audiotime[1] - audiotime[0]), "-acodec", audiocodec])
             else:
                 cmd.extend(["-i", audiofile, "-acodec", audiocodec])
-        cmd.extend(["-vcodec", codec, "-preset", preset, "-crf", "28"])
+        cmd.extend(["-vcodec", codec, "-preset", preset, "-crf", "26"])
         if ffmpeg_params is not None:
             cmd.extend(ffmpeg_params)
         if bitrate is not None:
