@@ -9,21 +9,16 @@ import numpy as np
 import os
 import traceback
 
-def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
-	logger.debug('entering preparedframes')
+def create_frame(ur, frames, settings, beatmap, replay_info, resultinfo, videotime, filename = None):
+	if(filename is None):
+		filename = settings.output
 
 	logger.debug("process start")
-
-	ur = getunstablerate(resultinfo)
-	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg)
 
 	shared = np.zeros((settings.height * settings.width * 4), dtype=np.uint8)
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 
-	_, file_extension = os.path.splitext(settings.output)
-	f = os.path.join(settings.temp, "outputf" + file_extension)
-
-	writer = getwriter(f, settings)
+	writer = getwriter(filename, settings)
 	buf = np.zeros((settings.height + int(settings.height/2.0), settings.width), dtype=np.uint8)
 
 	logger.debug("setup done")
@@ -40,71 +35,43 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
 	return None, None, None, None
 
 
-def create_frame_dual(settings, beatmap, replay_info, resultinfo, videotime):
-
-	_, file_extension = os.path.splitext(settings.output)
-	f = os.path.join(settings.temp, "outputf" + file_extension)
-
-	writer_conn, drawer_conn = Pipe(duplex=False)
-	drawer = Process(target=draw_frame, args=(drawer_conn, beatmap, replay_info, resultinfo, videotime, settings))
-	writer = Process(target=write_frame, args=(writer_conn, f, settings))
-
-	drawer.start()
-	writer.start()
-	drawer.join()
-	writer.join()
-
-	writer_conn.close()
-	drawer_conn.close()
-	return None, None, None, None
-
-def draw_frame(conn, beatmap, replay_info, resultinfo, videotime, settings):
+def create_frame_process(ur, frames, settings, beatmap, replay_info, resultinfo, videotime, filename = None):
 	try:
-		draw(conn, beatmap, replay_info, resultinfo, videotime, settings)
+		create_frame(ur, frames, settings, beatmap, replay_info, resultinfo, videotime, filename)
 	except Exception as e:
 		tb = traceback.format_exc()
 		logger.error("{} from {}\n{}\n\n\n".format(tb, videotime, repr(e)))
-		conn.send(OS.EX_OSERR)
 		raise
 
-def draw(conn, beatmap, replay_info, resultinfo, videotime, settings):
-	logger.info("start drawing")
+def create_frame_mp(settings, beatmap, replay_info, resultinfo, videotime):
 
-	ur = getunstablerate(resultinfo)
-	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg)
+	start_index, end_index = videotime
+	osr_interval = int((end_index - start_index) / settings.process)
+	start = start_index
 
-	shared = np.zeros((settings.height * settings.width * 4), dtype=np.uint8)
-	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
-	packed_image = np.zeros((settings.height + int(settings.height/2.0), settings.width), dtype=np.uint8)
+	my_file = open(os.path.join(settings.temp, "listvideo.txt"), "w")
+	drawers = []
+	for i in range(settings.process):
 
-	while drawer.frame_info.osr_index < videotime[1]:
-		status = drawer.render_draw()
-		if status:
-			cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2YUV_YV12, dst=packed_image)
-			conn.send(packed_image.tobytes())
-	conn.send(os.EX_OK)
-
-def write_frame(conn, filename, settings):
-	try:
-		write(conn, filename, settings)
-	except Exception as e:
-		tb = traceback.format_exc()
-		logger.error("{} from {}\n{}\n\n\n".format(tb, filename, repr(e)))
-		raise
-
-def write(conn, filename, settings):
-	logger.info("Start writing")
-
-	writer = getwriter(filename, settings)
-
-	frame = -1
-	while frame != os.EX_OK:
-		frame = conn.recv()
-		if frame == os.EX_OSERR:
-			raise Exception("Drawer terminated - terminating")
-		elif frame != os.EX_OK:
-			writer.write_frame(frame)
+		if i == settings.process - 1:
+			end = end_index
 		else:
-			break
+			end = start + osr_interval
 
-	writer.release()
+		vid = (start, end)
+
+		_, file_extension = os.path.splitext(settings.output)
+		f = os.path.join(settings.temp, f"outputf{i}{file_extension}")
+
+		ur = getunstablerate(resultinfo)
+		frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg)
+		drawer = Process(target=create_frame_process, args=(ur, frames, settings, beatmap, replay_info, resultinfo, vid, f))
+		drawer.start()
+		drawers.append(drawer)
+
+		my_file.write("file '{}'\n".format(f))
+
+		start += osr_interval
+	my_file.close()
+
+	return drawers, None, None, None

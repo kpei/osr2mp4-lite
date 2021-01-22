@@ -18,7 +18,7 @@ class FFMpegWriter:
         logfile=None,
         threads=None,
         ffmpeg_params=None,
-        pixel_format=None,
+        pixel_format=None
     ):
         if logfile is None:
             logfile = sp.PIPE
@@ -34,7 +34,7 @@ class FFMpegWriter:
             ffmpeg_binary,
             "-y",
             "-loglevel",
-            "error" if logfile == sp.PIPE else "info",
+            "error",
             "-thread_queue_size",
             "4096",
             "-f",
@@ -53,7 +53,7 @@ class FFMpegWriter:
         ]
         if audiofile is not None:
             cmd.extend(["-i", audiofile, "-acodec", audiocodec])
-        cmd.extend(["-vcodec", codec, "-preset", preset, "-crf", "28"])
+        cmd.extend(["-vcodec", codec, "-preset", preset, "-crf", "23"])
         if ffmpeg_params is not None:
             cmd.extend(ffmpeg_params)
         if bitrate is not None:

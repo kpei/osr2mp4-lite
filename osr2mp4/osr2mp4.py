@@ -22,8 +22,8 @@ from osr2mp4.Parser.osuparser import read_file
 from osr2mp4.Utils.HashBeatmap import get_osu
 from osr2mp4.Utils.Setup import setupglobals
 from osr2mp4.Utils.Timing import find_time, get_offset
-from osr2mp4.VideoProcess.CreateFrames import create_frame, create_frame_dual
-from osr2mp4.VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup, rename_video
+from osr2mp4.VideoProcess.CreateFrames import create_frame, create_frame_mp
+from osr2mp4.VideoProcess.DiskUtils import concat_videos_with_audio, setup_dir, cleanup, rename_video
 from osr2mp4.global_var import Settings, defaultsettings, defaultppconfig, defaultstrainconfig
 import uuid
 from autologging import traced, logged, TRACE
@@ -178,7 +178,7 @@ class Osr2mp4:
 		if not os.path.isdir(os.path.dirname(os.path.abspath(self.settings.output))):
 			raise CannotCreateVideo()
 
-		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame(self.settings, self.beatmap, self.replay_info, self.resultinfo, videotime)
+		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame_mp(self.settings, self.beatmap, self.replay_info, self.resultinfo, videotime)
 
 	def analyse_replay(self):
 
@@ -213,18 +213,8 @@ class Osr2mp4:
 	def joinvideo(self):
 		if self.data["Process"] >= 1:
 			for i in range(self.data["Process"]):
-				logger.debug(self.drawers[i].is_alive())
-				logger.debug(self.writers[i].is_alive())
 				self.drawers[i].join()
 				logger.debug(f"Joined drawers {i}")
-
-				self.writers[i].join()  # temporary fixm might cause some infinite loop
-				logger.debug(f"Joined writers {i}")
-
-				conn1, conn2 = self.pipes[i]
-				conn1.close()
-				conn2.close()
-				logger.debug(f"Closed conn {i}")
 
 		self.drawers, self.writers, self.pipes = None, None, None
 
@@ -239,10 +229,7 @@ class Osr2mp4:
 			self.joinaudio()
 
 		if self.data["Process"] > 1:
-			concat_videos(self.settings)
-		elif self.data["Process"] == 1:
-			rename_video(self.settings)
-		mix_video_audio(self.settings)
+			concat_videos_with_audio(self.settings)
 
 	def cleanup(self):
 		try:
