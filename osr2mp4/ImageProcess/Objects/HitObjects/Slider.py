@@ -118,10 +118,10 @@ class SliderManager:
 
 			angle = -np.arctan2(vector_y1, vector_x1) * 180 / np.pi
 			ball = ball.rotate(angle)
-		elif slider.cur_repeated % 2 == 1 and self.flip:
-			ball = ball.transpose(Image.FLIP_LEFT_RIGHT)
+		#elif slider.cur_repeated % 2 == 1 and self.flip:
+			#ball = ball.transpose(Image.FLIP_LEFT_RIGHT)
 
-		self.to_frame(self.sliderfollow[index], background, cur_pos, slider)
+		#self.to_frame(self.sliderfollow[index], background, cur_pos, slider)
 		self.to_frame(ball, background, cur_pos, slider)
 		slider.sliderf_i = max(0, min(self.slidermax_index, slider.sliderf_i + slider.appear_f))
 
@@ -168,7 +168,7 @@ class SliderManager:
 			else:
 				cur_pos = slider_c.at(int(going_forward) * slider.osu_d["pixel length"])  # if going_foward is true then t = 1 otherwise it's 0
 				index = int(slider.sliderf_i)
-				self.to_frame(self.sliderfollow_fadeout[index], background, cur_pos, slider)
+				#self.to_frame(self.sliderfollow_fadeout[index], background, cur_pos, slider)
 
 				# frame to make the sliderfollowcircle smaller, but it's smalling too fast so instead of increase index
 				# by 1, we increase it by 0.65 then convert it to integer. So some frames would appear twice.
