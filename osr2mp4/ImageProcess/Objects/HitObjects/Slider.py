@@ -119,7 +119,7 @@ class SliderManager:
 			angle = -np.arctan2(vector_y1, vector_x1) * 180 / np.pi
 			ball = ball.rotate(angle)
 		#elif slider.cur_repeated % 2 == 1 and self.flip:
-			#ball = ball.transpose(Image.FLIP_LEFT_RIGHT)
+		#	ball = ball.transpose(Image.FLIP_LEFT_RIGHT)
 
 		#self.to_frame(self.sliderfollow[index], background, cur_pos, slider)
 		self.to_frame(ball, background, cur_pos, slider)

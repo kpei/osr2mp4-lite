@@ -107,7 +107,6 @@ class Drawer:
 		self.component.hitresult.add_to_frame(self.img)
 		self.component.followpoints.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.hitobjmanager.add_to_frame(self.img, self.frame_info.cur_time)
-		self.component.hitresult.add_to_frame(self.img)
 		self.component.flashlight.add_to_frame(self.img, in_break, cursor_x, cursor_y)
 
 		# we don't want the flashlight black screen to overlay the scorebarbg
