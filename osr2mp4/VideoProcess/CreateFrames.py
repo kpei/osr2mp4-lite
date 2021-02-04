@@ -8,6 +8,17 @@ from osr2mp4.CheckSystem.mathhelper import getunstablerate
 import numpy as np
 import os
 import traceback
+import psutil
+
+import os, psutil
+process = psutil.Process(os.getpid())
+
+def sizeof_fmt(num, suffix='B'):
+    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.3f%s%s" % (num, 'Yi', suffix)
 
 def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
 	logger.debug('entering preparedframes')
@@ -28,11 +39,16 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
 
 	logger.debug("setup done")
 
+	framecount = 0
 	while drawer.frame_info.osr_index < videotime[1]:
 		status = drawer.render_draw()
 		if status:
+			framecount += 1
 			cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2YUV_YV12, dst=buf)
 			writer.write_frame(buf)
+
+		if framecount % 120 == 0:
+			logger.info(sizeof_fmt(process.memory_info().rss))
 
 	writer.release()
 	logger.debug("\nprocess done")
