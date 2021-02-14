@@ -36,7 +36,7 @@ class FFMpegWriter:
             "-loglevel",
             "error" if logfile == sp.PIPE else "info",
             "-thread_queue_size",
-            "4096",
+            "24",
             "-f",
             "rawvideo",
             "-vcodec",
