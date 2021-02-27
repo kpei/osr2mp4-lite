@@ -1,13 +1,16 @@
 {
-    "x": 100,
-    "y": 120,
-    "Size": 22,
+    "x": 145,
+    "y": 85,
+    "text_x": 65,
+    "text_y": 143,
+    "Font Size": 20,
+    "Size": 10,
     "Rgb": [
         255,
         255,
         255
     ],
     "Alpha": 0.9,
-    "Font": "/opt/python/res/font.otf",
-    "Background": "/opt/python/res/pptemplate.png"
+    "Font": "local/python/res/VAG-Rundschrift-D.ttf",
+    "Background": "local/python/res/pptemplate.png"
 }
