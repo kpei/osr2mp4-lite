@@ -49,9 +49,11 @@ from osr2mp4.ImageProcess.PrepareFrames.Scores.Hitresult import prepare_hitresul
 from osr2mp4.ImageProcess.PrepareFrames.Scores.ScoreCounter import prepare_scorecounter
 from osr2mp4.ImageProcess.PrepareFrames.Scores.SpinBonusScore import prepare_spinbonus
 from osr2mp4.ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
+from osr2mp4.ImageProcess.PrepareFrames.Scores.PPCounter import prepare_pp_counter
+from osr2mp4.ImageProcess.Objects.Scores.HitresultCounter import HitresultCounter
 
 class PreparedFrames:
-	def __init__(self, settings, diff, mod_combination, ur=None, bg=None):
+	def __init__(self, settings, diff, mod_combination, ur=None, bg=None, beatmap=None):
 		skin = settings.skin_ini
 		check = DiffCalculator(diff)
 		hd = Mod.Hidden in mod_combination
@@ -110,6 +112,8 @@ class PreparedFrames:
 
 		self.flashlight = prepare_flashlight(settings, fl)
 		self.urarrow = prepare_urarrow(settings)
+
+		self.pp_counter_custom = prepare_pp_counter(settings, os.path.join(settings.beatmap, bg[2]), beatmap)
 		logger.debug('start preparing done')
 
 
@@ -157,6 +161,7 @@ class FrameObjects:
 		self.scorebarbg = ScorebarBG(frames.scorebarbg, map_time[0] - timepreempt, settings, hasfl)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning, settings)
 
-		self.ppcounter = PPCounter(settings)
+		self.ppcounter = PPCounter(settings, custom_counter = frames.pp_counter_custom)
+		self.hitresultcounter = HitresultCounter(settings)
 		self.flashlight = Flashlight(frames.flashlight, settings, hasfl)
 		self.strain_graph = StrainGraph(settings, map_time[0], map_time[1])

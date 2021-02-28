@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 
 from osr2mp4 import logger
 from osr2mp4.ImageProcess import imageproc
@@ -6,13 +6,14 @@ from osr2mp4.ImageProcess.PrepareFrames.Components.Text import prepare_text
 
 
 class ACounter:
-	def __init__(self, settings, countersettings, prefix=""):
+	def __init__(self, settings, countersettings, prefix="", custom_counter = None):
 		self.settings = settings
 		self.frames = {}
 		self.countersettings = countersettings
 		self.background = None
 		self.prefix = prefix
 		self.score = ""
+		self.custom_counter = custom_counter
 
 		self.loadsettings(settings.ppsettings)
 		self.loadimg()
@@ -25,7 +26,7 @@ class ACounter:
 		char = [str(x) for x in range(10)]
 		char.append(".")
 		char.append(" ")
-		frames = prepare_text(char, self.countersettings[self.prefix + "Size"] * self.settings.scale,
+		frames = prepare_text(char, self.countersettings[self.prefix + "Font Size"] * self.settings.scale,
 		                           self.countersettings[self.prefix + "Rgb"], self.settings,
 		                           alpha=self.countersettings[self.prefix + "Alpha"],
 		                           fontpath=self.countersettings[self.prefix + "Font"])
@@ -34,7 +35,10 @@ class ACounter:
 			self.frames[int(i) if i.isdigit() else i] = frames[i]
 
 		try:
-			self.background = Image.open(self.countersettings[self.prefix + "Background"]).convert("RGBA")
+			if self.custom_counter:
+				self.background = self.custom_counter
+			else:
+				self.background = Image.open(self.countersettings[self.prefix + "Background"]).convert("RGBA")
 			scale = self.settings.scale * self.countersettings[self.prefix + "Size"]/20
 			self.background = imageproc.change_size(self.background, scale, scale)
 		except Exception as e:
@@ -48,8 +52,8 @@ class ACounter:
 		pass
 
 	def draw_number(self, background):
-		x = self.countersettings[self.prefix + "x"] * self.settings.scale - self.frames[0].size[0]/2
-		y = self.countersettings[self.prefix + "y"] * self.settings.scale + self.frames[0].size[1]/2
+		x = self.countersettings[self.prefix + "text_x"] * self.settings.scale
+		y = self.countersettings[self.prefix + "text_y"] * self.settings.scale
 		imageproc.draw_number(background, self.score, self.frames, x, y, self.countersettings[self.prefix + "Alpha"], origin="right", gap=0)
 
 	def add_to_frame(self, background):

@@ -15,7 +15,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
 	logger.debug("process start")
 
 	ur = getunstablerate(resultinfo)
-	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg)
+	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, beatmap=beatmap)
 
 	shared = np.zeros((settings.height * settings.width * 4), dtype=np.uint8)
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
@@ -32,6 +32,8 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
 		status = drawer.render_draw()
 		if status:
 			cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2YUV_YV12, dst=buf)
+			#drawer.img.save("/tmp/temp.png")
+			#raise Exception('e')
 			writer.write_frame(buf)
 
 	writer.release()
