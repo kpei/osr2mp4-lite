@@ -74,7 +74,7 @@ def prepare_pp_counter(settings, bg, beatmap):
 	# hit counter
 	text_draw.text((int(PP_CARD_WIDTH*0.47), int(PP_CARD_HEIGHT - PP_CARD_LOWER_HEIGHT/1.2)), "100", "#1dd1a1", font=FONT_HEADER)
 	text_draw.text((int(PP_CARD_WIDTH*0.67), int(PP_CARD_HEIGHT - PP_CARD_LOWER_HEIGHT/1.2)), "50", "#54a0ff", font=FONT_HEADER)
-	text_draw.text((int(PP_CARD_WIDTH*0.85), int(PP_CARD_HEIGHT - PP_CARD_LOWER_HEIGHT/1.2)), "miss", "#ff6b6b", font=FONT_HEADER)
+	text_draw.text((int(PP_CARD_WIDTH*0.84), int(PP_CARD_HEIGHT - PP_CARD_LOWER_HEIGHT/1.2)), "miss", "#ff6b6b", font=FONT_HEADER)
 
 	# round corners
 	mask.paste(bg, mask = mask)

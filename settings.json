@@ -4,7 +4,7 @@
 	"Song volume": 100,
 	"Effect volume": 100,
 	"Enable PP counter": true,
-	"Enable Strain Graph": false,
+	"Enable Strain Graph": true,
 	"FFmpeg codec": "libx265",
 	"FFmpeg custom commands": "",
 	"Audio bitrate": 320,

@@ -1,11 +1,11 @@
 {
-    "x": 210,
-    "y": 145,
-    "Size": 7.9,
-    "AspectRatio": [9,5],
-    "Rgb": [247,215,159],
-    "Alpha": 0.85,
+    "x": 3130,
+    "y": 1772,
+    "Size": 7.8,
+    "AspectRatio": [15,4],
+    "Rgb": [245,246,250],
+    "Alpha": 0.9,
     "Smoothing": 5,
     "ProgressAlpha": 0.75,
-    "GraphDensity": 25
+    "GraphDensity": 50
 }

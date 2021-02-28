@@ -1,16 +1,30 @@
 {
-    "x": 145,
-    "y": 85,
-    "text_x": 65,
-    "text_y": 143,
+    "x": 1220,
+    "y": 690,
+    "text_x": 1140,
+    "text_y": 748,
     "Font Size": 20,
     "Size": 10,
     "Rgb": [
-        255,
-        255,
-        255
+        200,
+        214,
+        229
     ],
     "Alpha": 0.9,
     "Font": "local/python/res/VAG-Rundschrift-D.ttf",
-    "Background": "local/python/res/pptemplate.png"
+    "Background": "local/python/res/pptemplate.png",
+    "Hitresult x": 1223,
+    "Hitresult y": 748,
+    "Hitresult Size": 16,
+    "Hitresult Font Size": 14,
+    "Hitresult Rgb": [
+        200,
+        214,
+        229
+    ],
+    "Hitresult Alpha": 1,
+    "Hitresult Font": "local/python/res/VAG-Rundschrift-D.ttf",
+    "Hitresult Background": "",
+    "Hitresult Gap": 3.2,
+    "Center Text": true
 }
