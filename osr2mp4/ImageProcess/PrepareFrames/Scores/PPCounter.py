@@ -59,10 +59,10 @@ def prepare_pp_counter(settings, bg, beatmap):
 	# title
 	title_font = FONT_DEFAULT_TITLE
 	beatmap_title = f'{beatmap.meta["Artist"]} - {beatmap.meta["Title"]}'
-	for fs in range(1,50):
+	for fs in range(15,50):
 	    f = get_font(settings.ppsettings["Font"], size=fs)
 	    title_size = text_draw.textsize(beatmap_title, f)
-	    if title_size[0] >= PP_CARD_WIDTH*0.65:
+	    if (title_size[0] >= PP_CARD_WIDTH*0.85) or (title_size[1] >= PP_CARD_HEIGHT*0.12):
 	        title_font = f
 	        logger.info(f"PP Counter Title size: {fs}")
 	        break
